@@ -18,7 +18,7 @@ const config: Config = {
         background: '#E0CEB7',
       },
       screens: {
-        mobilesm: { max: '388px' },
+        mobilesm: { max: '394px' },
       },
     },
   },

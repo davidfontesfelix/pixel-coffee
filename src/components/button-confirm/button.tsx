@@ -2,11 +2,15 @@ import { ReactNode } from 'react'
 
 interface ButtonProps {
   children: ReactNode
+  onClick?: () => void
 }
 
-export function Button({ children }: ButtonProps) {
+export function Button({ children, onClick }: ButtonProps) {
   return (
-    <button className="flex w-full bg-white py-4 text-2xl font-pixel700 rounded-sm items-center justify-center">
+    <button
+      onClick={onClick}
+      className="flex w-full bg-white py-4 text-2xl font-pixel700 rounded-sm items-center justify-center"
+    >
       {children}
     </button>
   )

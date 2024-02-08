@@ -6,7 +6,7 @@ interface NavRootProps {
 
 export function NavRoot({ children }: NavRootProps) {
   return (
-    <nav className="px-4 py-2 flex items-center justify-between">
+    <nav className="px-4 fadeInDown py-2 flex items-center justify-between">
       {children}
     </nav>
   )
