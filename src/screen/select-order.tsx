@@ -5,12 +5,18 @@ import { MyContextLocation } from '@/context/location-context'
 import Image from 'next/image'
 import { ChangeEvent, useContext, useState } from 'react'
 import { ButtonConfirm } from '@/components/button-confirm'
+import { CartContext } from '@/context/cart-context'
+import {
+  createOrderAtTheTable,
+  createTakeoutOrder,
+} from '@/service/firebase/firebase-service'
 
 export function SelectOrder() {
   const { setLocation } = useContext(MyContextLocation)
   const [showCover, setShowCover] = useState(false)
   const [whenCardSelected, setWhenCardSelected] = useState<string>('')
   const [whenTableSelected, setWhenTableSelected] = useState<string>('')
+  const { productsCart } = useContext(CartContext)
 
   const handleClickCloseButton = () => {
     setShowCover(true)
@@ -31,6 +37,11 @@ export function SelectOrder() {
     setWhenTableSelected(event.target.value)
   }
 
+  const tableData = {
+    table: whenTableSelected,
+    request: productsCart,
+  }
+
   const handleClickPost = () => {
     if (
       whenCardSelected === 'order-on-the-table' &&
@@ -38,10 +49,12 @@ export function SelectOrder() {
       whenTableSelected !== 'select'
     ) {
       setShowCover(true)
+      createOrderAtTheTable(tableData)
       setTimeout(() => {
         setLocation(whenCardSelected)
       }, 500)
     } else if (whenCardSelected === 'travel-request') {
+      createTakeoutOrder(productsCart)
       setShowCover(true)
       setTimeout(() => {
         setLocation(whenCardSelected)

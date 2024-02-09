@@ -15,7 +15,7 @@ const MyContextLocation = createContext<MyContextProps>({
 const MyContextLocationProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const [location, setLocation] = useState('select-order')
+  const [location, setLocation] = useState('home')
 
   return (
     <MyContextLocation.Provider value={{ location, setLocation }}>

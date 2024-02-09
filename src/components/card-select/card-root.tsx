@@ -16,7 +16,7 @@ export function CardSelectRoot({
   return (
     <button
       onClick={onClick}
-      className={`bg-neutral-200 ${className} rounded-sm ring-2 ${borderColor === true ? 'ring-primary' : 'ring-neutral-400'} mt-4 mx-4 p-4 focus:ring-2 focus:ring-primar"`}
+      className={`bg-neutral-200 ${className} rounded-sm ring-2 ${borderColor === true ? 'ring-primary' : 'ring-neutral-400'} mt-4 text-left mx-4 p-4 focus:ring-2 focus:ring-primar"`}
     >
       {children}
     </button>
