@@ -40,39 +40,44 @@ export function Cart() {
             />
           </Nav.button>
         </Nav.root>
-        <CardProduct.root>
+        {productsCart.length === 0 && (
+          <h3 className="text-center text-4xl fon">Sem itens no carrinho</h3>
+        )}
+        <CardProduct.Root>
           {productsCart.map((item, index) => (
-            <CardProduct.item id={index} key={index}>
+            <CardProduct.Item id={index} key={index}>
               <div className="flex">
-                <CardProduct.image src={item.img} alt={'Foto do' + item.name} />
+                <CardProduct.Image src={item.img} alt={'Foto do' + item.name} />
                 <div>
-                  <CardProduct.title>{item.name}</CardProduct.title>
-                  <CardProduct.price absolute={false}>
+                  <CardProduct.Title>{item.name}</CardProduct.Title>
+                  <CardProduct.Price absolute={false}>
                     R${item.price},00
-                  </CardProduct.price>
+                  </CardProduct.Price>
                 </div>
               </div>
               <div>
-                <CardProduct.button
+                <CardProduct.Button
                   id={item.id}
                   img={item.img}
                   name={item.name}
                   price={item.price}
                 />
               </div>
-            </CardProduct.item>
+            </CardProduct.Item>
           ))}
-        </CardProduct.root>
+        </CardProduct.Root>
       </Cover>
-      <ButtonConfirm.root>
-        <ButtonConfirm.info
-          name="Total"
-          value={'R$' + CalculatingTotalValueOfProducts(productsCart) + ',00'}
-        />
-        <ButtonConfirm.button onClick={() => handleClickConfirmButton()}>
-          {showCover ? 'Confirmar pedido' : 'Verificar pedido'}
-        </ButtonConfirm.button>
-      </ButtonConfirm.root>
+      {productsCart.length > 0 && (
+        <ButtonConfirm.Root>
+          <ButtonConfirm.Info
+            name="Total"
+            value={'R$' + CalculatingTotalValueOfProducts(productsCart) + ',00'}
+          />
+          <ButtonConfirm.Button onClick={() => handleClickConfirmButton()}>
+            {showCover ? 'Confirmar pedido' : 'Verificar pedido'}
+          </ButtonConfirm.Button>
+        </ButtonConfirm.Root>
+      )}
     </section>
   )
 }

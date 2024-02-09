@@ -7,11 +7,11 @@ import { Price } from './price'
 import { Title } from './title'
 
 export const CardProduct = {
-  root: ListRoot,
-  item: Item,
-  image: ImageCard,
-  title: Title,
-  paragraph: Paragraph,
-  price: Price,
-  button: Button,
+  Root: ListRoot,
+  Item,
+  Image: ImageCard,
+  Title,
+  Paragraph,
+  Price,
+  Button,
 }

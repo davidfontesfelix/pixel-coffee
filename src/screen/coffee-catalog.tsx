@@ -56,44 +56,44 @@ export function CoffeeCatalog() {
           />
         </Nav.button>
       </Nav.root>
-      <CardProduct.root>
+      <CardProduct.Root>
         {getCoffees.map((item, index) => (
-          <CardProduct.item id={item.id} key={index}>
+          <CardProduct.Item id={item.id} key={index}>
             <div className="flex">
-              <CardProduct.image src={item.img} alt={'imagem do' + item.name} />
+              <CardProduct.Image src={item.img} alt={'imagem do' + item.name} />
               <div>
-                <CardProduct.title>{item.name}</CardProduct.title>
-                <CardProduct.paragraph>
+                <CardProduct.Title>{item.name}</CardProduct.Title>
+                <CardProduct.Paragraph>
                   {item.description}
-                </CardProduct.paragraph>
-                <CardProduct.price absolute={true}>
+                </CardProduct.Paragraph>
+                <CardProduct.Price absolute={true}>
                   R${item.price},00
-                </CardProduct.price>
+                </CardProduct.Price>
               </div>
             </div>
             <div>
-              <CardProduct.button
+              <CardProduct.Button
                 id={item.id}
                 img={item.img}
                 name={item.name}
                 price={item.price}
               >
                 adicionar
-              </CardProduct.button>
+              </CardProduct.Button>
             </div>
-          </CardProduct.item>
+          </CardProduct.Item>
         ))}
-      </CardProduct.root>
+      </CardProduct.Root>
       {productsCart.length > 0 && (
-        <ButtonConfirm.root condition={productsCart.length > 0}>
-          <ButtonConfirm.info
+        <ButtonConfirm.Root condition={productsCart.length > 0}>
+          <ButtonConfirm.Info
             name="Total"
             value={'R$' + CalculatingTotalValueOfProducts(productsCart) + ',00'}
           />
-          <ButtonConfirm.button onClick={() => handleClickConfirmButton()}>
+          <ButtonConfirm.Button onClick={() => handleClickConfirmButton()}>
             {showCover ? 'Confirmar pedido' : 'Verificar pedido'}
-          </ButtonConfirm.button>
-        </ButtonConfirm.root>
+          </ButtonConfirm.Button>
+        </ButtonConfirm.Root>
       )}
     </section>
   )

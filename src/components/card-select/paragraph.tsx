@@ -5,9 +5,5 @@ interface ParagraphProps {
 }
 
 export function Paragraph({ children }: ParagraphProps) {
-  return (
-    <p className="text-lg text-black/70 leading-4 mobilesm:text-base mobilesm:leading-4">
-      {children}
-    </p>
-  )
+  return <p className="text-2xl text-black/80 leading-6">{children}</p>
 }
