@@ -51,8 +51,8 @@ export function Cart() {
         )}
         <CardList.Root>
           {cart &&
-            cart.map((cart) => (
-              <CardList.Li key={cart.item.id}>
+            cart.map((cart, index) => (
+              <CardList.Li index={index} key={cart.item.id}>
                 <CardList.Image
                   src={cart.item.img}
                   alt={'Imagem em pixel art do ' + cart.item.name}
