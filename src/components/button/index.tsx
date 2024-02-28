@@ -1,11 +1,13 @@
 'use client'
-import { CartContext } from '@/context/cart-context'
-import { ReactNode, useContext, useState } from 'react'
+import { ReactNode, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
+import { useCart } from '@/store/cart'
 
-interface Product {
+interface Item {
   id: number
-  quantity: number
+  name: string
+  price: number
+  img: string
 }
 
 interface ButtonProps {
@@ -17,20 +19,34 @@ interface ButtonProps {
 }
 
 export function Button({ children, id, price, name, img }: ButtonProps) {
-  const { productsCart, addToCart, removeFromCart } = useContext(CartContext)
+  const [addToCart, removeFromCart, cart] = useCart((state) => [
+    state.addToCart,
+    state.removeFromCart,
+    state.cart,
+  ])
+
+  const product = {
+    id,
+    name,
+    price,
+    img,
+  }
+
   const [open, setOpen] = useState(false)
   const checkArray = () => {
-    const check = productsCart.some((object) => object.id === id)
-    const condition = productsCart.find((item) => item.id === id)
-
-    const handleClickAddButton = (check: Product | undefined) => {
-      addToCart(id, price, name, img)
-      if (check?.quantity === 4 || check?.quantity === 5) {
+    const check = cart.some((cart) => cart.item.id === id)
+    const condition = cart.find((cart) => cart.item.id === id)?.quantity ?? 0
+    const handleClickAdd = (item: Item) => {
+      console.log(condition)
+      console.log(condition === 5)
+      if (condition === 5 || condition === 4) {
         setOpen(true)
       } else {
         setOpen(false)
       }
+      addToCart(item)
     }
+
     if (check) {
       return (
         <div className="flex mx-2">
@@ -41,13 +57,13 @@ export function Button({ children, id, price, name, img }: ButtonProps) {
             <span className="text-5xl text-white">-</span>
           </button>
           <div className="flex items-center text-black justify-center px-1 text-3xl font-pixel700">
-            {productsCart.find((item) => item.id === id)?.quantity ?? 0}
+            {cart.find((cart) => cart.item.id === id)?.quantity ?? 0}
           </div>
           {open ? (
             <Dialog.Root>
               <Dialog.Trigger
                 className="bg-primary data-[condition=true]:opacity-0 h-11 w-[41.2px] rounded-r-sm flex items-center justify-center"
-                onClick={() => handleClickAddButton(condition)}
+                onClick={() => handleClickAdd(product)}
               >
                 <span className="text-5xl text-white">+</span>
               </Dialog.Trigger>
@@ -67,7 +83,7 @@ export function Button({ children, id, price, name, img }: ButtonProps) {
           ) : (
             <button
               className="bg-primary data-[condition=true]:opacity-0 h-11 w-[41.2px] rounded-r-sm flex items-center justify-center"
-              onClick={() => handleClickAddButton(condition)}
+              onClick={() => handleClickAdd(product)}
             >
               <span className="text-5xl text-white">+</span>
             </button>
@@ -77,7 +93,7 @@ export function Button({ children, id, price, name, img }: ButtonProps) {
     } else {
       return (
         <button
-          onClick={() => addToCart(id, price, name, img)}
+          onClick={() => addToCart(product)}
           className="mx-2 uppercase rounded-sm bg-primary text-xl text-slate-50 px-4 py-2"
         >
           {children}

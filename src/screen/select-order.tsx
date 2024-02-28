@@ -1,22 +1,18 @@
 import { CardSelect } from '@/components/card-select'
 import { Cover } from '@/components/cover'
 import { Nav } from '@/components/nav'
-import { MyContextLocation } from '@/context/location-context'
 import Image from 'next/image'
-import { ChangeEvent, useContext, useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import { ButtonConfirm } from '@/components/button-confirm'
-import { CartContext } from '@/context/cart-context'
-import {
-  createOrderAtTheTable,
-  createTakeoutOrder,
-} from '@/service/firebase/firebase-service'
+import { useLocation } from '@/store/location'
+import { useCart } from '@/store/cart'
 
 export function SelectOrder() {
-  const { setLocation } = useContext(MyContextLocation)
+  const setLocation = useLocation((state) => state.setLocation)
   const [showCover, setShowCover] = useState(false)
   const [whenCardSelected, setWhenCardSelected] = useState<string>('')
   const [whenTableSelected, setWhenTableSelected] = useState<string>('')
-  const { productsCart } = useContext(CartContext)
+  const cart = useCart((state) => state.cart)
 
   const handleClickCloseButton = () => {
     setShowCover(true)
@@ -37,24 +33,70 @@ export function SelectOrder() {
     setWhenTableSelected(event.target.value)
   }
 
-  const tableData = {
-    table: whenTableSelected,
-    request: productsCart,
-  }
-
   const handleClickPost = () => {
     if (
       whenCardSelected === 'order-on-the-table' &&
       whenTableSelected !== '' &&
       whenTableSelected !== 'select'
     ) {
+      const postDataTakeout = async () => {
+        const list = cart.map((cart) => {
+          const id = cart.item.id
+          const name = cart.item.name
+          const price = cart.item.price
+          const quantity = cart.quantity
+          return { id, name, price, quantity }
+        })
+
+        const response = await fetch('http://localhost:3001/menu/table-order', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ order: list, table: whenTableSelected }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error)
+        }
+
+        return response.json()
+      }
+      postDataTakeout()
       setShowCover(true)
-      createOrderAtTheTable(tableData)
       setTimeout(() => {
         setLocation(whenCardSelected)
       }, 500)
     } else if (whenCardSelected === 'travel-request') {
-      createTakeoutOrder(productsCart)
+      const postDataTakeout = async () => {
+        const list = cart.map((cart) => {
+          const id = cart.item.id
+          const name = cart.item.name
+          const price = cart.item.price
+          const quantity = cart.quantity
+          return { id, name, price, quantity }
+        })
+
+        const response = await fetch(
+          'https://pixel-coffee-api.vercel.app/menu/takeout-order',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order: list }),
+          },
+        )
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error)
+        }
+
+        return response.json()
+      }
+      postDataTakeout()
       setShowCover(true)
       setTimeout(() => {
         setLocation(whenCardSelected)
@@ -105,7 +147,7 @@ export function SelectOrder() {
               (whenCardSelected === 'travel-request' && true)
             }
             defaultValue="select"
-            className={`w-full p-2 mt-4 bg-slate-100 ${checkBorder() && 'border-primary border-2'}  rounded-sm focus:outline-primary focus:ring-1 text-2xl font-pixel700`}
+            className={`w-full p-2 py-4 mt-4 bg-slate-100 ${checkBorder() && 'border-primary border-2'} rounded-sm focus:outline-primary focus:ring-1 text-2xl font-pixel700`}
           >
             <option value="select">Selecionar mesa</option>
             <option value="mesa1">Mesa-1</option>

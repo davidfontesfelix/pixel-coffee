@@ -1,16 +1,14 @@
 'use client'
 import { Header } from '@/components/header'
-import CartProvider from '@/context/cart-context'
-import { MyContextLocation } from '@/context/location-context'
 import { Cart } from '@/screen/cart'
 import { CoffeeCatalog } from '@/screen/coffee-catalog'
 import { SelectOrder } from '@/screen/select-order'
 import { TableOrder } from '@/screen/table-order'
 import { TravelRequest } from '@/screen/travel-request'
-import { useContext } from 'react'
+import { useLocation } from '@/store/location'
 
 export default function Home() {
-  const { location } = useContext(MyContextLocation)
+  const location = useLocation((state) => state.location)
   const checkLocation = () => {
     if (location === 'home') {
       return <CoffeeCatalog />
@@ -28,7 +26,7 @@ export default function Home() {
   return (
     <main className=" font-pixel400 bg-background w-full h-[100dvh]">
       <Header />
-      <CartProvider>{checkLocation()}</CartProvider>
+      {checkLocation()}
     </main>
   )
 }

@@ -1,0 +1,81 @@
+@import '../../global/variables.scss';
+
+.list {
+  padding-bottom: 150px;
+}
+
+.list li {
+  display: flex;
+  background-color: $secondary;
+  margin: 0 16px;
+  border: 2px solid $primary;
+  border-radius: 2px;
+  
+
+  @media (max-width: 390px) {
+    margin: 0 10px;
+  }
+
+  .image-div{
+    padding: 10px;
+    border-radius: 2px;
+    min-width: 108px;
+    min-height: 108px;
+  }
+
+  .infos{
+    width: 100%;
+
+    @media (max-width: 380px) {
+      display: flex;
+      
+    }
+    
+    .header-div {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 4px 16px 8px 0px;
+      align-items: center;
+
+      @media (max-width: 380px) {
+        flex-direction: column;
+        padding: 10px 0px 4px 0px;
+        align-items: inherit;
+      }
+
+      h3{ 
+        line-height: 90%;
+        margin-right: 10px;
+        color: #000;
+
+        @media (max-width: 370px) {
+          font-size: 20px;
+        }
+      }
+    }
+
+    .summary-div {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      
+      @media (max-width: 380px) {
+        justify-content: center;
+        align-items: center;
+      }
+
+      p{
+        line-height: 80%;
+
+        @media (max-width: 380px) {
+          display: none;
+        }
+        @media (max-width: 400px) {
+          font-size: 19px;
+        }
+      }
+    }
+  }
+}
+

@@ -1,13 +1,13 @@
 import { ButtonConfirm } from '@/components/button-confirm'
-import { CardProduct } from '@/components/card-product'
 import { Cover } from '@/components/cover'
 import { Nav } from '@/components/nav'
-import { CartContext } from '@/context/cart-context'
-import { MyContextLocation } from '@/context/location-context'
-import { getMenu } from '@/service/firebase/firebase-service'
-import { CalculatingTotalValueOfProducts } from '@/utils/calculate-total-value-of-products'
+import { useCart } from '@/store/cart'
+import { useLocation } from '@/store/location'
 import Image from 'next/image'
-import { useContext, useEffect, useState } from 'react'
+import { useState } from 'react'
+import useSWR from 'swr'
+import { CardList } from '@/components/card-list'
+import CardNotLoad from '@/components/card-not-load'
 
 interface Coffee {
   name: string
@@ -18,22 +18,16 @@ interface Coffee {
 }
 
 export function CoffeeCatalog() {
-  const [getCoffees, setGetCoffees] = useState<Coffee[]>([])
-  const { productsCart } = useContext(CartContext)
   const [showCover, setShowCover] = useState(false)
-  const { setLocation } = useContext(MyContextLocation)
+  const setLocation = useLocation((state) => state.setLocation)
+  const cart = useCart((state) => state.cart)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const infoMenu = await getMenu()
-        setGetCoffees(infoMenu[0].coffees)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    fetchData()
-  }, [])
+  const values = cart.map((cart) => cart.item.price * cart.quantity)
+
+  const totalValues = values.reduce(
+    (accumulator, current) => accumulator + current,
+    0,
+  )
 
   const handleClickConfirmButton = () => {
     setShowCover(true)
@@ -41,6 +35,13 @@ export function CoffeeCatalog() {
       setLocation('cart')
     }, 500)
   }
+  const fetcher = (url: string | URL | Request) =>
+    fetch(url).then((res) => res.json())
+
+  const { data, isLoading } = useSWR<Coffee[]>(
+    'https://pixel-coffee-api.vercel.app/menu/coffees',
+    fetcher,
+  )
 
   return (
     <section className="overflow-y-scroll bg-background">
@@ -48,48 +49,49 @@ export function CoffeeCatalog() {
       <Nav.root>
         <Nav.name>Cafés</Nav.name>
         <Nav.button>
-          <Image
-            width={64}
-            height={64}
-            src="/assets/pixelarts/cart.png"
-            alt="pixel arte do carrinho de compras "
-          />
+          {cart.length > 0 ? (
+            <Image
+              width={64}
+              height={64}
+              src="/assets/pixelarts/cart-full.png"
+              alt="pixel arte do carrinho de compras cheio"
+            />
+          ) : (
+            <Image
+              width={64}
+              height={64}
+              src="/assets/pixelarts/cart.png"
+              alt="pixel arte do carrinho de compras "
+            />
+          )}
         </Nav.button>
       </Nav.root>
-      <CardProduct.Root>
-        {getCoffees.map((item, index) => (
-          <CardProduct.Item id={item.id} key={index}>
-            <div className="flex">
-              <CardProduct.Image src={item.img} alt={'imagem do' + item.name} />
-              <div>
-                <CardProduct.Title>{item.name}</CardProduct.Title>
-                <CardProduct.Paragraph>
-                  {item.description}
-                </CardProduct.Paragraph>
-                <CardProduct.Price absolute={true}>
-                  R${item.price},00
-                </CardProduct.Price>
-              </div>
-            </div>
-            <div>
-              <CardProduct.Button
-                id={item.id}
-                img={item.img}
-                name={item.name}
-                price={item.price}
-              >
-                adicionar
-              </CardProduct.Button>
-            </div>
-          </CardProduct.Item>
-        ))}
-      </CardProduct.Root>
-      {productsCart.length > 0 && (
-        <ButtonConfirm.Root condition={productsCart.length > 0}>
-          <ButtonConfirm.Info
-            name="Total"
-            value={'R$' + CalculatingTotalValueOfProducts(productsCart) + ',00'}
-          />
+      {isLoading ? (
+        <CardNotLoad />
+      ) : (
+        <CardList.Root>
+          {data &&
+            data.map((item, index) => (
+              <CardList.Li key={item.id} index={index}>
+                <CardList.Image
+                  src={item.img}
+                  alt={'Imagem em pixel art do ' + item.name}
+                />
+                <CardList.DivInfos>
+                  <CardList.Header price={item.price}>
+                    {item.name}
+                  </CardList.Header>
+                  <CardList.Summary item={item}>
+                    {item.description}
+                  </CardList.Summary>
+                </CardList.DivInfos>
+              </CardList.Li>
+            ))}
+        </CardList.Root>
+      )}
+      {cart.length > 0 && (
+        <ButtonConfirm.Root condition={cart.length > 0}>
+          <ButtonConfirm.Info name="Total" value={'R$' + totalValues + ',00'} />
           <ButtonConfirm.Button onClick={() => handleClickConfirmButton()}>
             {showCover ? 'Confirmar pedido' : 'Verificar pedido'}
           </ButtonConfirm.Button>

@@ -1,17 +1,23 @@
 import { ButtonConfirm } from '@/components/button-confirm'
-import { CardProduct } from '@/components/card-product'
+import { CardList } from '@/components/card-list'
 import { Cover } from '@/components/cover'
 import { Nav } from '@/components/nav'
-import { CartContext } from '@/context/cart-context'
-import { MyContextLocation } from '@/context/location-context'
-import { CalculatingTotalValueOfProducts } from '@/utils/calculate-total-value-of-products'
+import { useCart } from '@/store/cart'
+import { useLocation } from '@/store/location'
 import Image from 'next/image'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 
 export function Cart() {
   const [showCover, setShowCover] = useState(true)
-  const { productsCart } = useContext(CartContext)
-  const { setLocation } = useContext(MyContextLocation)
+  const cart = useCart((state) => state.cart)
+  const setLocation = useLocation((state) => state.setLocation)
+
+  const values = cart.map((cart) => cart.item.price * cart.quantity)
+
+  const totalValues = values.reduce(
+    (accumulator, current) => accumulator + current,
+    0,
+  )
 
   const handleClickCloseButton = () => {
     setShowCover(false)
@@ -40,39 +46,30 @@ export function Cart() {
             />
           </Nav.button>
         </Nav.root>
-        {productsCart.length === 0 && (
+        {cart.length === 0 && (
           <h3 className="text-center text-4xl fon">Sem itens no carrinho</h3>
         )}
-        <CardProduct.Root>
-          {productsCart.map((item, index) => (
-            <CardProduct.Item id={index} key={index}>
-              <div className="flex">
-                <CardProduct.Image src={item.img} alt={'Foto do' + item.name} />
-                <div>
-                  <CardProduct.Title>{item.name}</CardProduct.Title>
-                  <CardProduct.Price absolute={false}>
-                    R${item.price},00
-                  </CardProduct.Price>
-                </div>
-              </div>
-              <div>
-                <CardProduct.Button
-                  id={item.id}
-                  img={item.img}
-                  name={item.name}
-                  price={item.price}
+        <CardList.Root>
+          {cart &&
+            cart.map((cart) => (
+              <CardList.Li key={cart.item.id}>
+                <CardList.Image
+                  src={cart.item.img}
+                  alt={'Imagem em pixel art do ' + cart.item.name}
                 />
-              </div>
-            </CardProduct.Item>
-          ))}
-        </CardProduct.Root>
+                <CardList.DivInfos>
+                  <CardList.Header price={cart.item.price}>
+                    {cart.item.name}
+                  </CardList.Header>
+                  <CardList.Summary item={cart.item} />
+                </CardList.DivInfos>
+              </CardList.Li>
+            ))}
+        </CardList.Root>
       </Cover>
-      {productsCart.length > 0 && (
+      {cart.length > 0 && (
         <ButtonConfirm.Root>
-          <ButtonConfirm.Info
-            name="Total"
-            value={'R$' + CalculatingTotalValueOfProducts(productsCart) + ',00'}
-          />
+          <ButtonConfirm.Info name="Total" value={'R$' + totalValues + ',00'} />
           <ButtonConfirm.Button onClick={() => handleClickConfirmButton()}>
             {showCover ? 'Confirmar pedido' : 'Verificar pedido'}
           </ButtonConfirm.Button>
